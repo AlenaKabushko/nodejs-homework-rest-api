@@ -1,5 +1,6 @@
 const fs = require('fs/promises'); 
 const path = require('path');
+const uniqid = require('uniqid');
 
 const contactsPath = path.normalize("./models/contacts.json");
 
@@ -29,9 +30,34 @@ const getContactById = async (contactId) => {
     }
 }
 
-const removeContact = async (contactId) => {}
+const removeContact = async (contactId) => {
+    try {
+        const contacts = await getListContacts();
+        const updateContacts =
+            contacts.filter((obj) => obj.id !== contactId);
+        await fs.writeFile(contactsPath, JSON.stringify(updateContacts, null, '\t'), "utf-8")
+        console.log(updateContacts, 'from foo')
+        // esli net id
+    } catch (error) {
+        console.log('error', error);
+    }
+}
 
-const addContact = async (body) => {}
+const addContact = async (body) => {
+    try {
+        // id po ocheredi
+        const id = uniqid()
+        const { name, email, phone } = body
+        const addedContact = { id, name, email, phone }
+        
+        const contacts = await getListContacts()        
+        contacts.push(addedContact)
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'), "utf-8")
+        return addedContact
+    } catch (error) {
+        console.log('error', error);
+    }
+}
 
 const updateContact = async (contactId, body) => {}
 
