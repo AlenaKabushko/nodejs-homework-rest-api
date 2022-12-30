@@ -19,24 +19,44 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
-  const contactsById = await getContactById(contactId)
-  res.status(200).json(contactsById)
+  const contactById = await getContactById(contactId)
+  
+  if (contactById !== undefined){
+    res.status(200).json(contactById)
+  }
+  else {
+    res.status(404).json({
+      message: `We didn't find anyone with ID ${contactId}. Please try again`
+    })
+  }
 })
 
 router.post('/', async (req, res, next) => {
-  console.log(req.query, 'query')
-   // eslint-disable-next-line no-unused-vars
+  const { name, email, phone } = req.query
   const addedContact = await addContact(req.query)
-  res.status(201).json(addedContact)
-  
+
+  if (name === "" || email === "" || phone === "") {
+    res.status(400).json({"message": "Missing required name field"})
+  } else {
+    res.status(201).json(addedContact)
+  }
 })
 
 router.delete('/:contactId', async (req, res, next) => {
-  const { contactId } = req.params;
-  // eslint-disable-next-line no-unused-vars
-  const deletedContacts = await removeContact(contactId)
+  const { contactId } = req.params
+  const contactById = await getContactById(contactId)
   
-  res.status(200).json({ message: `Contact with ID ${contactId} deleted successfully` })
+  if (contactById === undefined) {
+    res.status(404).json({
+    message: `Contact with ID ${contactId} not found. Please try again`
+  })
+  } else {
+    // eslint-disable-next-line no-unused-vars
+    const deletedContact = await removeContact(contactId)
+    res.status(200).json({
+    message: `Contact with ID ${contactId} deleted successfully`
+  })
+  }
 })
 
 router.put('/:contactId', async (req, res, next) => {
