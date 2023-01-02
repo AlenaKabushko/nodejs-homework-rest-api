@@ -1,4 +1,5 @@
 const express = require('express')
+const { validSchemaPost, validSchemaPut } = require('../../utils/validSchema.js')
 
 const router = express.Router()
 
@@ -36,6 +37,13 @@ router.post('/', async (req, res, next) => {
   const { name, email, phone } = req.query
   const addedContact = await addContact(req.query)
 
+  const { error } = validSchemaPost.validate(req.query)
+
+  if (error) {
+    res.status(400).json({ "message": "Validation error.  Please try again" })
+    return
+  }
+
   if (name === "" || email === "" || phone === "") {
     res.status(400).json({"message": "Missing required name field"})
   } else {
@@ -64,6 +72,13 @@ router.put('/:contactId', async (req, res, next) => {
   const { contactId } = req.params;
   const body = req.query
   const contactforUpdate = await updateContact(contactId, body)
+
+  const { error } = validSchemaPut.validate(req.query)
+
+  if (error) {
+    res.status(400).json({ "message": "Validation error.  Please try again" })
+    return
+  }
 
   if (!contactforUpdate) {
     res.status(404).json({"message": "Not found"})
