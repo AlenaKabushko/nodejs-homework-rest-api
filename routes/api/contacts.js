@@ -5,7 +5,8 @@ const router = express.Router()
 const { getListContacts,
   getContactById, 
   removeContact, 
-  addContact
+  addContact, 
+  updateContact
     } = require('../../models/contacts');
 
 router.get('/', async (req, res, next) => {
@@ -60,7 +61,15 @@ router.delete('/:contactId', async (req, res, next) => {
 })
 
 router.put('/:contactId', async (req, res, next) => {
-  res.status(200).json({ message: 'template message put' })
+  const { contactId } = req.params;
+  const body = req.query
+  const contactforUpdate = await updateContact(contactId, body)
+
+  if (!contactforUpdate) {
+    res.status(404).json({"message": "Not found"})
+  } else {
+    res.status(200).json(contactforUpdate)
+  }
 })
 
 module.exports = router

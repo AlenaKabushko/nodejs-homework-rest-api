@@ -25,7 +25,7 @@ const getContactById = async (contactId) => {
 
 const removeContact = async (contactId) => {
     try {
-        const contacts = await getListContacts();
+        const contacts = await getListContacts()
         const updateContacts =
             contacts.filter((obj) => obj.id !== contactId);
         await fs.writeFile(contactsPath, JSON.stringify(updateContacts, null, '\t'), "utf-8")
@@ -52,8 +52,19 @@ const addContact = async (body) => {
 
 const updateContact = async (contactId, body) => {
     try {
-        // const contactForUpdate = await getContactById(contactId)
+        const contacts = await getListContacts()
+        const contactFromId = contacts.find((obj) => obj.id === contactId)
+        
+        if(body.name) { contactFromId.name = body.name }
+        if (body.email) { contactFromId.email = body.email }
+        if (body.phone) { contactFromId.phone = body.phone }
 
+        if (!contactFromId) {
+            return null
+        }
+
+        await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'), "utf-8")
+        return contactFromId
     } catch (error) {
         
     }
