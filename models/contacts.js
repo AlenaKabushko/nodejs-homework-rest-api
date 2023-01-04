@@ -65,7 +65,7 @@ const updateContact = async (contactId, body) => {
         await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'), "utf-8")
         return contactFromId
     } catch (error) {
-        
+        console.log('error', error)
     }
 }
 
