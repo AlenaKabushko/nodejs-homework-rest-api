@@ -32,7 +32,6 @@ router.get('/:contactId', async (req, res, next) => {
 }) 
 
 router.post('/', async (req, res, next) => {
-  const { name, email, phone } = req.query
   const addedContact = await addContact(req.query)
 
   const { error } = validSchemaPost.validate(req.query)
@@ -41,12 +40,8 @@ router.post('/', async (req, res, next) => {
     res.status(400).json({ "message": "Validation error.  Please try again" })
     return
   }
-
-  if (name === "" || email === "" || phone === "") {
-    res.status(400).json({"message": "Missing required name field"})
-  } else {
     res.status(201).json(addedContact)
-  }
+
 })
 
 router.delete('/:contactId', async (req, res, next) => {
