@@ -1,4 +1,6 @@
 const express = require('express')
+
+const { middleware } = require('../../middleware/middlewareValidate')
 const { validSchemaPost, validSchemaPut } = require('../../utils/validSchema.js')
 
 const router = express.Router()
@@ -31,16 +33,10 @@ router.get('/:contactId', async (req, res, next) => {
   res.status(200).json(contactById)
 }) 
 
-router.post('/', async (req, res, next) => {
+router.post('/', middleware(validSchemaPost, 'query'), async (req, res, next) => {
   const addedContact = await addContact(req.query)
 
-  const { error } = validSchemaPost.validate(req.query)
-
-  if (error) {
-    res.status(400).json({ "message": "Validation error.  Please try again" })
-    return
-  }
-    res.status(201).json(addedContact)
+  res.status(201).json(addedContact)
 
 })
 
@@ -60,17 +56,10 @@ router.delete('/:contactId', async (req, res, next) => {
   }
 })
 
-router.put('/:contactId', async (req, res, next) => {
+router.put('/:contactId',middleware(validSchemaPut, 'query'), async (req, res, next) => {
   const { contactId } = req.params;
   const body = req.query
   const contactforUpdate = await updateContact(contactId, body)
-
-  const { error } = validSchemaPut.validate(req.query)
-
-  if (error) {
-    res.status(400).json({ "message": "Validation error.  Please try again" })
-    return
-  }
 
   if (!contactforUpdate) {
     res.status(404).json({"message": "Not found"})

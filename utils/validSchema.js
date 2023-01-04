@@ -15,5 +15,5 @@ const validSchemaPut = Joi.object({
 
 module.exports = {
     validSchemaPost,
-    validSchemaPut
+    validSchemaPut, 
 };
