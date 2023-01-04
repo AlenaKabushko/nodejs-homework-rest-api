@@ -54,10 +54,10 @@ const updateContact = async (contactId, body) => {
         const contacts = await getListContacts()
         const contactFromId = contacts.find((obj) => obj.id === contactId)
         
-        if(body.name) { contactFromId.name = body.name }
-        if (body.email) { contactFromId.email = body.email }
-        if (body.phone) { contactFromId.phone = body.phone }
-
+        contactFromId.name = body.name || contactFromId.name
+        contactFromId.email = body.email || contactFromId.email
+        contactFromId.phone = body.phone || contactFromId.phone
+        
         if (!contactFromId) {
             return null
         }
