@@ -35,32 +35,18 @@ const addContact = async (req, res, next) => {
   return res.status(201).json(contact);
 }
 
+const updateContact = async (req, res, next) => {
+  const { contactId } = req.params;
+  const contact = await Contacts.findByIdAndUpdate(contactId, req.query, { new: true})
 
+  return res.status(201).json(contact);
+}
 
-// const updateContact = async (contactId, body) => {
-//     try {
-//         const contacts = await getListContacts()
-//         const contactFromId = contacts.find((obj) => obj.id === contactId)
-        
-//         contactFromId.name = body.name || contactFromId.name
-//         contactFromId.email = body.email || contactFromId.email
-//         contactFromId.phone = body.phone || contactFromId.phone
-        
-//         if (!contactFromId) {
-//             return null
-//         }
-
-//         await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'), "utf-8")
-//         return contactFromId
-//     } catch (error) {
-//         console.log('error', error)
-//     }
-// }
 
 module.exports = {
   getListContacts,
   getContactById,
   removeContact,
   addContact,
-//   updateContact,
+  updateContact,
 }
