@@ -1,26 +1,18 @@
 const express = require('express')
 
 const { tryCatch} = require('../../utils/tryCatch')
-// const { middleware } = require('../../middleware/middlewareValidate')
-// const { validSchemaPost, validSchemaPut } = require('../../utils/validSchema.js')
-const { getListContacts, getContactById, removeContact } = require('../../controller/controller');
+const { middleware } = require('../../middleware/middlewareValidate')
+const { validSchemaPost } = require('../../utils/validSchema.js')
+const { getListContacts, getContactById, removeContact, addContact } = require('../../controller/controller');
 
 const router = express.Router()
 
 router.get('/', tryCatch(getListContacts))
     .get('/:contactId', tryCatch(getContactById))
     .delete('/:contactId', tryCatch(removeContact))
+    .post('/', middleware(validSchemaPost, 'query'), tryCatch(addContact))
 
 
-
-
-
-// router.post('/', middleware(validSchemaPost, 'query'), async (req, res, next) => {
-//   const addedContact = await addContact(req.query)
-
-//   res.status(201).json(addedContact)
-
-// })
 
 
 

@@ -28,20 +28,14 @@ const removeContact = async (req, res, next) => {
   return res.json({message: `Contact with ID ${contactId} deleted successfully`});
 }
 
-// const addContact = async (body) => {
-//     try {
-//         const id = uniqid()
-//         const { name, email, phone } = body
-//         const addedContact = { id, name, email, phone }
-        
-//         const contacts = await getListContacts()        
-//         contacts.push(addedContact)
-//         await fs.writeFile(contactsPath, JSON.stringify(contacts, null, '\t'), "utf-8")
-//         return addedContact
-//     } catch (error) {
-//         console.log('error', error)
-//     }
-// }
+const addContact = async (req, res, next) => {
+  const { name, email, phone } = req.query;
+  const contact = await Contacts.create({ name, email, phone })
+
+  return res.status(201).json(contact);
+}
+
+
 
 // const updateContact = async (contactId, body) => {
 //     try {
@@ -67,6 +61,6 @@ module.exports = {
   getListContacts,
   getContactById,
   removeContact,
-//   addContact,
+  addContact,
 //   updateContact,
 }
