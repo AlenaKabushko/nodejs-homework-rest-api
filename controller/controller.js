@@ -17,17 +17,16 @@ const getContactById = async (req, res, next) => {
   return res.json(contact);
 }
 
-// const removeContact = async (contactId) => {
-//     try {
-//         const contacts = await getListContacts()
-//         const updateContacts =
-//             contacts.filter((obj) => obj.id !== contactId);
-//         await fs.writeFile(contactsPath, JSON.stringify(updateContacts, null, '\t'), "utf-8")
-//         return contacts
-//     } catch (error) {
-//         console.log('error', error)
-//     }
-// }
+const removeContact = async (req, res, next) => {
+  const { contactId } = req.params;
+  const contact = await Contacts.findByIdAndRemove(contactId)
+  
+  if (!contact) {
+    return next(HttpError(404, `We didn't find anyone with ID ${contactId}. Please try again`));
+  }
+
+  return res.json({message: `Contact with ID ${contactId} deleted successfully`});
+}
 
 // const addContact = async (body) => {
 //     try {
@@ -67,7 +66,7 @@ const getContactById = async (req, res, next) => {
 module.exports = {
   getListContacts,
   getContactById,
-//   removeContact,
+  removeContact,
 //   addContact,
 //   updateContact,
 }
