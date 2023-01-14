@@ -7,7 +7,7 @@ const getListContacts = async (req, res, next) => {
 }
 
 const getContactById = async (req, res, next) => {
-  const { contactId } = req.params;
+  const { contactId } = req.params
   const contact = await Contacts.findById(contactId)
   
   if (!contact) {
@@ -18,7 +18,7 @@ const getContactById = async (req, res, next) => {
 }
 
 const removeContact = async (req, res, next) => {
-  const { contactId } = req.params;
+  const { contactId } = req.params
   const contact = await Contacts.findByIdAndRemove(contactId)
   
   if (!contact) {
@@ -29,19 +29,33 @@ const removeContact = async (req, res, next) => {
 }
 
 const addContact = async (req, res, next) => {
-  const { name, email, phone } = req.query;
+  const { name, email, phone } = req.query
   const contact = await Contacts.create({ name, email, phone })
 
   return res.status(201).json(contact);
 }
 
 const updateContact = async (req, res, next) => {
-  const { contactId } = req.params;
-  const contact = await Contacts.findByIdAndUpdate(contactId, req.query, { new: true})
+  const { contactId } = req.params
+  const contact = await Contacts.findByIdAndUpdate(contactId, req.query, { new: true })
+  
+  if (!contact) {
+    return next(HttpError(404, `We didn't find anyone with ID ${contactId}. Please try again`));
+  }
 
   return res.status(201).json(contact);
 }
 
+const addContactToFav = async (req, res, next) => {
+  const { contactId } = req.params
+
+  if(req.query.favorite){
+    const contact = await Contacts.findByIdAndUpdate(contactId, {favorite: req.query.favorite}, { new: true})
+    return res.status(200).json(contact)
+  }
+
+  return res.status(400).json({message: "missing field favorite"})
+}
 
 module.exports = {
   getListContacts,
@@ -49,4 +63,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  addContactToFav
 }
