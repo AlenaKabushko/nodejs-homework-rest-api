@@ -7,9 +7,9 @@ dotenv.config();
 
 const { HOST_URI } = process.env;
 
-async function main() {
+function main() {
   try {
-    await mongoose.connect(HOST_URI)
+    mongoose.connect(HOST_URI)
     console.log("Database connection successful")
 
     app.listen(3000, () => {
