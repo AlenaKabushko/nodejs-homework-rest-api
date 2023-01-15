@@ -13,7 +13,12 @@ const validSchemaPut = Joi.object({
   phone: Joi.number().min(1).integer(),
 }).min(1);
 
+const validSchemaPatch = Joi.object({
+  favorite: Joi.boolean().required(),
+});
+
 module.exports = {
     validSchemaPost,
     validSchemaPut, 
+    validSchemaPatch
 };

@@ -49,12 +49,8 @@ const updateContact = async (req, res, next) => {
 const addContactToFav = async (req, res, next) => {
   const { contactId } = req.params
 
-  if(req.query.favorite){
-    const contact = await Contacts.findByIdAndUpdate(contactId, {favorite: req.query.favorite}, { new: true})
-    return res.status(200).json(contact)
-  }
-
-  return res.status(400).json({message: "missing field favorite"})
+  const contact = await Contacts.findByIdAndUpdate(contactId, {favorite: req.query.favorite}, { new: true})
+  return res.status(200).json(contact)
 }
 
 module.exports = {
