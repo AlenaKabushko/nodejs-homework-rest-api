@@ -1,9 +1,9 @@
 
-function HttpError(status, message) {
-    const err = new Error(message);
-    err.status = status;
-    return err;
-}
+// function HttpError(status, message) {
+//     const err = new Error(message);
+//     err.status = status;
+//     return err;
+// }
 
 class ValidationError extends Error {
   constructor(message) {
@@ -19,6 +19,5 @@ function ValidError(status, message) {
 }
 
 module.exports = {
-    HttpError,
     ValidError
 };

@@ -1,5 +1,5 @@
 const { Contacts } = require('../models/schemaMongoose');
-const { HttpError } = require("../utils/errorList");
+// const { HttpError } = require("../utils/errorList");
 
 const getListContacts = async (req, res, next) => {
   const contacts = await Contacts.find({})
@@ -9,21 +9,13 @@ const getListContacts = async (req, res, next) => {
 const getContactById = async (req, res, next) => {
   const { contactId } = req.params
   const contact = await Contacts.findById(contactId)
-  
-  if (!contact) {
-    return next(HttpError(404, `We didn't find anyone with ID ${contactId}. Please try again`));
-  }
 
   return res.json(contact);
 }
 
 const removeContact = async (req, res, next) => {
   const { contactId } = req.params
-  const contact = await Contacts.findByIdAndRemove(contactId)
-  
-  if (!contact) {
-    return next(HttpError(404, `We didn't find anyone with ID ${contactId}. Please try again`));
-  }
+  await Contacts.findByIdAndRemove(contactId)
 
   return res.json({message: `Contact with ID ${contactId} deleted successfully`});
 }
@@ -38,10 +30,6 @@ const addContact = async (req, res, next) => {
 const updateContact = async (req, res, next) => {
   const { contactId } = req.params
   const contact = await Contacts.findByIdAndUpdate(contactId, req.query, { new: true })
-  
-  if (!contact) {
-    return next(HttpError(404, `We didn't find anyone with ID ${contactId}. Please try again`));
-  }
 
   return res.status(201).json(contact);
 }

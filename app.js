@@ -19,17 +19,18 @@ app.use((req, res) => {
 })
 
 app.use((error, req, res, next) => {
+
   if (error.status) {
     return res.status(error.status).json({
       message: error.message,
     });
   }
 
-  if (error.message.includes("Cast to ObjectId failed for value")) {
-    return res.status(400).json({
-      message: "We didn't find anyone. Please try again",
+  if (error.message.includes("Cast to ObjectId failed for value")) {return res.status(404).json({
+      message: `We didn't find anyone with ID ${error.value}. Please try again`,
     });
-  }
+  } 
+  
     return res.status(500).json({
     message: "Internal server error",
   });
