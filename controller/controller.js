@@ -1,5 +1,5 @@
 const { Contacts } = require('../models/schemaMongoose');
-const { HttpError } = require("../utils/tryCatch");
+const { HttpError } = require("../utils/errorList");
 
 const getListContacts = async (req, res, next) => {
   const contacts = await Contacts.find({})
@@ -29,8 +29,8 @@ const removeContact = async (req, res, next) => {
 }
 
 const addContact = async (req, res, next) => {
-  const { name, email, phone } = req.query
-  const contact = await Contacts.create({ name, email, phone })
+  const { name, email, phone, favorite } = req.query
+  const contact = await Contacts.create({ name, email, phone, favorite })
 
   return res.status(201).json(contact);
 }
