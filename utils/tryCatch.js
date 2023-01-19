@@ -3,7 +3,7 @@ function tryCatch(func) {
         try {
             await func(req, res, next);
         } catch (error) {
-            return next(error);
+            return next(error.message);
         }
     };
 }

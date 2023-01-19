@@ -16,14 +16,13 @@ const contactsSchema = mongoose.Schema  ({
         minLength: [2, "oops, it's too short! try again please"],
     },
     favorite: {
-      type: Boolean,
-      default: false,
-  },
-    
-    //     owner: {
-    //     type: SchemaTypes.ObjectId,
-    //     ref: 'user',
-    // }
+        type: Boolean,
+        default: false,
+    },    
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+    }
 })
 
 const Contacts = mongoose.model('contacts', contactsSchema)
