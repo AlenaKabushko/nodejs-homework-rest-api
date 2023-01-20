@@ -4,13 +4,18 @@ const { tryCatch} = require('../../utils/tryCatch')
 const { middleware } = require('../../middleware/middlewareValidate')
 const { validSchemaPostUser } = require('../../utils/validSchema.js')
 const {
-addUser
+    addUser,
+    loginUser,
     } = require('../../controller/controllerUsers');
 
 const router = express.Router()
 
-router.post('/signup',middleware(validSchemaPostUser, 'query'), tryCatch(addUser))
-    // .get('/:contactId', tryCatch(getContactById))
+router.post('/signup', middleware(validSchemaPostUser, 'query'), tryCatch(addUser))
+    .post('/login', middleware(validSchemaPostUser, 'query'), tryCatch(loginUser))
+
+
+
+// .get('/:contactId', tryCatch(getContactById))
     // .delete('/:contactId', tryCatch(removeContact))
     // .post('/', middleware(validSchemaPost, 'query'), tryCatch(addContact))
     // .put('/:contactId', middleware(validSchemaPut, 'query'), tryCatch(updateContact))

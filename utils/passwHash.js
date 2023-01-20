@@ -5,7 +5,11 @@ async function hashedPassw(password) {
     return await bcrypt.hash(password, salt)
 }
 
+async function checkPass(password, hashed) {    
+    return await bcrypt.compareSync(password, hashed);
+}
 
 module.exports = {
-    hashedPassw
+    hashedPassw,
+    checkPass
 };
