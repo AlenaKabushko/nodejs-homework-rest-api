@@ -7,7 +7,8 @@ const { auth } = require('../../middleware/checkToken')
 const {
     addUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    currentUser
     } = require('../../controller/controllerUsers');
 
 const router = express.Router()
@@ -15,15 +16,7 @@ const router = express.Router()
 router.post('/signup', middleware(validSchemaPostUser, 'query'), tryCatch(addUser))
     .post('/login', middleware(validSchemaPostUser, 'query'), tryCatch(loginUser))
     .get('/logout', auth, tryCatch(logoutUser))
-
-
-
-
-// .get('/:contactId', tryCatch(getContactById))
-    // .delete('/:contactId', tryCatch(removeContact))
-    // .post('/', middleware(validSchemaPost, 'query'), tryCatch(addContact))
-    // .put('/:contactId', middleware(validSchemaPut, 'query'), tryCatch(updateContact))
-    // .patch('/:contactId/favorite', middleware(validSchemaPatch, 'query'),  tryCatch(addContactToFav))
+    .get('/current', auth, tryCatch(currentUser))
 
 module.exports = router
 

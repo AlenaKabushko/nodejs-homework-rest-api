@@ -65,9 +65,24 @@ const logoutUser = async (req, res, next) => {
     });    
 }
 
+const currentUser = async (req, res, next) => {
+    if (!req.user) {
+        throw HttpError(401, "Missing User in reques body!");
+    }
+
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+        throw HttpError(401, `Not authorized`);
+    }
+
+    return res.status(200).json({ email: user.email, subscription: user.subscription }); 
+}
+
 
 module.exports = {
     addUser, 
     loginUser,
-    logoutUser
+    logoutUser,
+    currentUser
 }
