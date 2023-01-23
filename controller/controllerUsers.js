@@ -50,7 +50,7 @@ const loginUser = async (req, res, next) => {
 
 const logoutUser = async (req, res, next) => {
     if (!req.user) {
-        throw HttpError(401, "Missing User in reques body!");
+        throw HttpError(401, "Missing User in body!");
     }
 
     const token = null

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose') ;
 
-const contactsSchema = mongoose.Schema  ({
+const contactsSchema = new mongoose.Schema  ({
     name: {
         type: String,
         minLength: [1, "oops, it's too short! try again please"],
@@ -22,6 +22,7 @@ const contactsSchema = mongoose.Schema  ({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
+       // required: true,
     }
 })
 
