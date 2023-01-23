@@ -2,8 +2,8 @@ const { Contacts } = require('../models/schemaMongoose');
 
 const getListContacts = async (req, res, next) => { 
   const user = req.user
-  const { page = 1, limit = 1 } = req.query
-  const skip = page === 1 ? 0 : limit * (page - 1);
+  const { page = 1, limit = 10 } = req.query
+  const skip = page === 1 ? 0 : limit * (page - 1)
 
   const contacts = await Contacts.find({
     owner: user._id
