@@ -25,30 +25,50 @@ const loginUser = async (req, res, next) => {
     const { email, password } = req.query   
     
     const user = await User.findOne({ email })
-    // !user && next(HttpError(401, 'Email is wrong, please try again'))
     if (!user) {
         return next(HttpError(401, 'Email is wrong, please try again'))
     }
 
     const validPassw = await checkPass(password, user.password);
-    // !validPassw && next(HttpError(401, 'Password is wrong, please try again'))
     if (!validPassw) {
         return next(HttpError(401, 'Password is wrong, please try again'))
     }
 
     const payload = { id: user._id, email: user.email }
     const token = jwt.sign(payload, JWT_SECRET, {
-    expiresIn: "1d", 
+    expiresIn: "5d", 
     });
+
+    await User.findByIdAndUpdate(user._id, { token }, { new: true })
     
     return res.status(201).json({
-        token,
-        newUser: { email: user.email, subscription: user.subscription }
+        token: token,
+        user: { email: user.email, subscription: user.subscription }
     });
+
+}
+
+const logoutUser = async (req, res, next) => {
+    if (!req.user) {
+        throw HttpError(401, "Missing User in reques body!");
+    }
+
+    const token = null
+    const user = await User.findByIdAndUpdate(req.user.id, { token }, { new: true });
+    
+    if (!user) {
+        throw HttpError(401, `User by id ${req.user.id} not found!`);
+    }
+
+    return res.status(201).json({
+        token: token,
+        user: { email: user.email, subscription: user.subscription }
+    });    
 }
 
 
 module.exports = {
     addUser, 
-    loginUser
+    loginUser,
+    logoutUser
 }
