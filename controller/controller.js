@@ -15,7 +15,12 @@ const getListContacts = async (req, res, next) => {
 
 const getContactById = async (req, res, next) => {
   const { contactId } = req.params
-  const contact = await Contacts.findById(contactId)
+  const user = req.user
+  const contact = await Contacts.findById(
+    contactId,
+    'name phone number email favorite',
+    {owner: user._id}
+  )
 
   return res.json(contact);
 }
