@@ -1,14 +1,26 @@
 const { Contacts } = require('../models/schemaMongoose');
-// const { HttpError } = require("../utils/errorList");
 
-const getListContacts = async (req, res, next) => {
-  const contacts = await Contacts.find({})
+const getListContacts = async (req, res, next) => { 
+  const user = req.user
+  const { page = 1, limit = 10 } = req.query
+  const skip = page === 1 ? 0 : limit * (page - 1)
+
+  const contacts = await Contacts.find({
+    owner: user._id
+  }) .skip(Number(skip))
+    .limit(Number(limit));
+  
   res.json(contacts)    
 }
 
 const getContactById = async (req, res, next) => {
   const { contactId } = req.params
-  const contact = await Contacts.findById(contactId)
+  const user = req.user
+  const contact = await Contacts.findById(
+    contactId,
+    'name phone number email favorite',
+    {owner: user._id}
+  )
 
   return res.json(contact);
 }
@@ -22,7 +34,8 @@ const removeContact = async (req, res, next) => {
 
 const addContact = async (req, res, next) => {
   const { name, email, phone, favorite } = req.query
-  const contact = await Contacts.create({ name, email, phone, favorite })
+  const user = req.user;
+  const contact = await Contacts.create({ name, email, phone, favorite, owner: user._id})
 
   return res.status(201).json(contact);
 }

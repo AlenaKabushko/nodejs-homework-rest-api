@@ -10,15 +10,16 @@ const {
     addContact,
     updateContact,
     addContactToFav
-    } = require('../../controller/controller');
+} = require('../../controller/controller');
+    const { auth } = require('../../middleware/checkToken')
 
 const router = express.Router()
 
-router.get('/', tryCatch(getListContacts))
-    .get('/:contactId', tryCatch(getContactById))
-    .delete('/:contactId', tryCatch(removeContact))
-    .post('/', middleware(validSchemaPost, 'query'), tryCatch(addContact))
-    .put('/:contactId', middleware(validSchemaPut, 'query'), tryCatch(updateContact))
-    .patch('/:contactId/favorite', middleware(validSchemaPatch, 'query'),  tryCatch(addContactToFav))
+router.get('/', auth, tryCatch(getListContacts))
+    .get('/:contactId', auth, tryCatch(getContactById))
+    .delete('/:contactId', auth, tryCatch(removeContact))
+    .post('/', middleware(validSchemaPost, 'query'), auth, tryCatch(addContact))
+    .put('/:contactId', middleware(validSchemaPut, 'query'), auth, tryCatch(updateContact))
+    .patch('/:contactId/favorite', middleware(validSchemaPatch, 'query'), auth, tryCatch(addContactToFav))
 
 module.exports = router
