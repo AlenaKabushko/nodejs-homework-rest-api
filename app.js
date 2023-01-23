@@ -17,26 +17,25 @@ app.use('/api/contacts', contactsRouter)
 app.use('/api/users', usersRouter)
 
 app.use((req, res) => {
-  res.status(404).json({ message: 'Not found' })
+    res.status(404).json({ message: 'Not found' })
 })
 
 app.use((error, req, res, next) => {
 
-  if (error.status) {
-    return res.status(error.status).json({
-      message: error.message,
-    });
-  }
+    if (error.status) {
+        return res.status(error.status).json({
+            message: error.message,
+        });
+    }
 
-  if (error.message.includes("Cast to ObjectId failed for value")) {return res.status(404).json({
-      message: `We didn't find anyone with ID ${error.value}. Please try again`,
-    });
-  } 
+    if (error.message.includes("Cast to ObjectId failed for value")) {return res.status(404).json({
+        message: `We didn't find anyone with ID ${error.value}. Please try again`,
+        });
+    } 
   
-  return res.status(500).json({
-      // message: "Internal server error",
-    message: error.message,
-  });
+    return res.status(500).json({
+        message: "Internal server error" || error.message
+    });
 });
 
 

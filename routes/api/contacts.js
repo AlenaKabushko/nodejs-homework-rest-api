@@ -1,8 +1,9 @@
-const express = require('express')
+const express = require('express');
 
-const { tryCatch} = require('../../utils/tryCatch')
-const { middleware } = require('../../middleware/middlewareValidate')
-const { validSchemaPost, validSchemaPut, validSchemaPatch } = require('../../utils/validSchema.js')
+const { tryCatch } = require('../../utils/tryCatch');
+const { middleware } = require('../../middleware/middlewareValidate');
+const { validSchemaPost, validSchemaPut, validSchemaPatch } = require('../../utils/validSchema.js');
+const { auth } = require('../../middleware/checkToken');
 const {
     getListContacts,
     getContactById,
@@ -11,9 +12,8 @@ const {
     updateContact,
     addContactToFav
 } = require('../../controller/controller');
-    const { auth } = require('../../middleware/checkToken')
 
-const router = express.Router()
+const router = express.Router();
 
 router.get('/', auth, tryCatch(getListContacts))
     .get('/:contactId', auth, tryCatch(getContactById))
