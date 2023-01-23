@@ -57,12 +57,11 @@ const logoutUser = async (req, res, next) => {
     const user = await User.findByIdAndUpdate(req.user.id, { token }, { new: true });
     
     if (!user) {
-        throw HttpError(401, `User by id ${req.user.id} not found!`);
+        throw HttpError(401, `Not authorized`);
     }
 
-    return res.status(201).json({
-        token: token,
-        user: { email: user.email, subscription: user.subscription }
+    return res.status(204).json({
+        message: 'No Content',
     });    
 }
 
