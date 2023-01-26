@@ -1,26 +1,27 @@
+const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
+dotenv.config();
 const { User } = require('../models/schemaUsers');
 const { hashedPassword, checkPassword } = require('../utils/passwordHash');
 const { ConflictError, AuthError } = require('../utils/errorList');
-const jwt = require("jsonwebtoken");
-
-const dotenv = require('dotenv');
-dotenv.config();
+const gravatar = require('gravatar');
 const { JWT_SECRET } = process.env;
 
 const addUser = async (req, res, next) => {
     const { email, password } = req.query
     const conflictUser = await User.findOne({ email })
+    const createdAvatar = gravatar.url(email, {protocol: 'https', s: '400', r: 'g', d: 'identicon', f: 'y'})
     
     if (conflictUser) {
         return (next(ConflictError(409, 'Email in use, please change it and try again')))
     }
 
     const user = await User.create({
-        email, password: await hashedPassword(password)
+        email, password: await hashedPassword(password), avatarURL: createdAvatar
     })
     
     return res.status(201).json({
-        newUser: { email: user.email, subscription: user.subscription }
+        newUser: { email: user.email, subscription: user.subscription, avatar: user.avatarURL }
     })
 }
 
