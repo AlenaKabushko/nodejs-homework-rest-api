@@ -8,6 +8,7 @@ const gravatar = require('gravatar');
 const { JWT_SECRET } = process.env;
 const path = require('path');
 const fs = require('fs').promises;
+const Jimp = require('jimp')
 
 const addUser = async (req, res, next) => {
     const { email, password } = req.query
@@ -89,16 +90,27 @@ const currentUser = async (req, res, next) => {
     }) 
 }
 
+
+const folder = path.join(__dirname, "../", "public", "avatars")
 const addAvatar = async (req, res, next) => {
     const user = await User.findById(req.user.id)
     if (!user) {
         return next(AuthError(401, "Not authorized"))
     }
-
+    
     const { path: temporaryName, originalname } = req.file
-    const folder = path.join(__dirname, "../", "public", "avatars")    
+    
     const fileName = path.join(req.user.id + "-" + originalname)
     const avatarURL = path.join("public", "avatars", fileName)
+
+    await Jimp.read(temporaryName)
+        .then(avatar => {
+        return avatar
+            .resize(250, 250)
+            .write(temporaryName);
+        }).catch(err => {
+            return next(err)
+        })
 
     try {
         await fs.rename(temporaryName, path.join(folder, fileName))
@@ -109,8 +121,8 @@ const addAvatar = async (req, res, next) => {
             avatarURL: user.avatarURL
         })
     } catch (err) {
-        await fs.unlink(temporaryName);
-        return next(err);
+        await fs.unlink(temporaryName)
+        return next(err)
     }    
 }
 
