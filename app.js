@@ -35,9 +35,9 @@ app.use((error, req, res, next) => {
         message: `We didn't find anyone with ID ${error.value}. Please try again`,
         });
     } 
-  
+    
     return res.status(500).json({
-        message: "Internal server error" || error.message
+        message: "Internal server error" 
     });
 });
 

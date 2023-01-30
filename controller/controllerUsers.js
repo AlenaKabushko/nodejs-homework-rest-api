@@ -6,6 +6,8 @@ const { hashedPassword, checkPassword } = require('../utils/passwordHash');
 const { ConflictError, AuthError } = require('../utils/errorList');
 const gravatar = require('gravatar');
 const { JWT_SECRET } = process.env;
+const path = require('path');
+const fs = require('fs').promises;
 
 const addUser = async (req, res, next) => {
     const { email, password } = req.query
@@ -48,7 +50,11 @@ const loginUser = async (req, res, next) => {
     
     return res.status(201).json({
         token: token,
-        user: { email: user.email, subscription: user.subscription }
+        user: {
+            email: user.email,
+            subscription: user.subscription,
+            avatar: user.avatarURL
+        }        
     })
 
 }
@@ -76,7 +82,36 @@ const currentUser = async (req, res, next) => {
         return next(AuthError(401, "Not authorized"))
     }
 
-    return res.status(200).json({ email: user.email, subscription: user.subscription }) 
+    return res.status(200).json({
+        email: user.email,
+        subscription: user.subscription,
+        avatar: user.avatarURL
+    }) 
+}
+
+const addAvatar = async (req, res, next) => {
+    const user = await User.findById(req.user.id)
+    if (!user) {
+        return next(AuthError(401, "Not authorized"))
+    }
+
+    const { path: temporaryName, originalname } = req.file
+    const folder = path.join(__dirname, "../", "public", "avatars")    
+    const fileName = path.join(req.user.id + "-" + originalname)
+    const avatarURL = path.join("public", "avatars", fileName)
+
+    try {
+        await fs.rename(temporaryName, path.join(folder, fileName))
+        await User.findByIdAndUpdate(req.user.id, { avatarURL })
+
+        res.status(200).json({
+            email: user.email,
+            avatarURL: user.avatarURL
+        })
+    } catch (err) {
+        await fs.unlink(temporaryName);
+        return next(err);
+    }    
 }
 
 
@@ -84,5 +119,6 @@ module.exports = {
     addUser, 
     loginUser,
     logoutUser,
-    currentUser
+    currentUser,
+    addAvatar
 }
