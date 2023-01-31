@@ -27,7 +27,7 @@ const contactsSchema = new mongoose.Schema  ({
 })
 
 const Contacts = mongoose.model('contacts', contactsSchema)
-  
+
 module.exports = {
-  Contacts
+    Contacts
 }
