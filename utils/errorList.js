@@ -3,13 +3,8 @@ class ValidationError extends Error {
     constructor(message) {
         super(message)
         this.name = "ValidationError"
+        this.status = 400
     }
-}
-
-function ValidError(status, message) {
-    const err = new ValidationError(message)
-    err.status = status
-    return err
 }
 
 class RegistrationConflictError extends Error {
@@ -39,7 +34,7 @@ function AuthError(status, message) {
 }
 
 module.exports = {
-    ValidError,
     ConflictError,
-    AuthError
+    AuthError,
+    ValidationError
 };
