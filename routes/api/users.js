@@ -10,7 +10,8 @@ const {
     loginUser,
     logoutUser,
     currentUser,
-    addAvatar
+    addAvatar,
+    verifyUser
 } = require('../../controller/controllerUsers');
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.post('/signup', middleware(validSchemaPostUser, 'query'), tryCatch(addUse
     .get('/logout', auth, tryCatch(logoutUser))
     .get('/current', auth, tryCatch(currentUser))
     .patch('/avatars', auth, upload.single('avatar'), tryCatch(addAvatar))
+    .get('/verify/:verificationToken', tryCatch(verifyUser))
 
 module.exports = router
 

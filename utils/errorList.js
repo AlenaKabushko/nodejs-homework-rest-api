@@ -11,19 +11,15 @@ class RegistrationConflictError extends Error {
     constructor(message) {
         super(message)
         this.name = "RegistrationConflictError"
+        this.status = 409
     }
-}
-
-function ConflictError(status, message) {
-    const err = new RegistrationConflictError(message)
-    err.status = status
-    return err
 }
 
 class LoginAuthError extends Error {
     constructor(message) {
         super(message)
         this.name = "LoginAuthError"
+        this.status = 401
     }
 }
 
@@ -33,8 +29,18 @@ function AuthError(status, message) {
     return err
 }
 
+class VerificationError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "VerificationError"
+        this.status = 404
+    }
+}
+
 module.exports = {
-    ConflictError,
+    ValidationError,
+    RegistrationConflictError,
+    LoginAuthError,
     AuthError,
-    ValidationError
+    VerificationError
 };
