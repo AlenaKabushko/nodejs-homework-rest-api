@@ -3,28 +3,41 @@ const dotenv = require('dotenv');
 dotenv.config();
 const { User } = require('../models/schemaUsers');
 const { hashedPassword, checkPassword } = require('../utils/passwordHash');
-const { ConflictError, AuthError } = require('../utils/errorList');
+const { RegistrationConflictError, LoginAuthError, VerificationError, ValidationError } = require('../utils/errorList');
 const gravatar = require('gravatar');
 const { JWT_SECRET } = process.env;
 const path = require('path');
 const fs = require('fs').promises;
-const Jimp = require('jimp')
+const Jimp = require('jimp');
+const { v4: uuid } = require('uuid');
+const { sendEmail } = require('../utils/sendEmailNodemailer');
+
 
 const addUser = async (req, res, next) => {
     const { email, password } = req.query
     const conflictUser = await User.findOne({ email })
     const createdAvatar = gravatar.url(email, {protocol: 'https', s: '400', r: 'g', d: 'identicon', f: 'y'})
-    
+    const verificationToken = uuid()
+
     if (conflictUser) {
-        return (next(ConflictError(409, 'Email in use, please change it and try again')))
+        throw new RegistrationConflictError('Email in use, please change it and try again')
     }
 
     const user = await User.create({
-        email, password: await hashedPassword(password), avatarURL: createdAvatar
+        email,
+        password: await hashedPassword(password),
+        avatarURL: createdAvatar,
+        verificationToken: verificationToken
     })
-    
+
+    await sendEmail(email, verificationToken)
+
     return res.status(201).json({
-        newUser: { email: user.email, subscription: user.subscription, avatar: user.avatarURL }
+        newUser: {
+            email: user.email,
+            subscription: user.subscription,
+            avatar: user.avatarURL
+        }
     })
 }
 
@@ -34,12 +47,16 @@ const loginUser = async (req, res, next) => {
     
     const user = await User.findOne({ email })
     if (!user) {
-        return next(AuthError(401, 'Email is wrong, please try again'))
+        throw new LoginAuthError('Email is wrong, please try again')
+    }
+
+    if (!user.verify) {
+        throw new VerificationError("User not verified")
     }
 
     const validPassw = await checkPassword(password, user.password)
     if (!validPassw) {
-        return next(AuthError(401, 'Password is wrong, please try again'))
+        throw new LoginAuthError('Password is wrong, please try again')
     }
 
     const payload = { id: user._id, email: user.email }
@@ -62,7 +79,7 @@ const loginUser = async (req, res, next) => {
 
 const logoutUser = async (req, res, next) => {
     if (!req.user) {
-        return next(AuthError(401, "Missing User in body!"))
+        throw new LoginAuthError("Missing User in body!")
     }
 
     const token = null
@@ -75,12 +92,12 @@ const logoutUser = async (req, res, next) => {
 
 const currentUser = async (req, res, next) => {
     if (!req.user) {
-        return next(AuthError(401, "Missing User in body!"))
+        throw new LoginAuthError("Missing User in body!")
     }
 
     const user = await User.findById(req.user.id)    
     if (!user) {
-        return next(AuthError(401, "Not authorized"))
+        throw new LoginAuthError("Not authorized")
     }
 
     return res.status(200).json({
@@ -95,7 +112,7 @@ const folder = path.join(__dirname, "../", "public", "avatars")
 const addAvatar = async (req, res, next) => {
     const user = await User.findById(req.user.id)
     if (!user) {
-        return next(AuthError(401, "Not authorized"))
+        throw new LoginAuthError("Not authorized")
     }
     
     const { path: temporaryName, originalname } = req.file
@@ -126,11 +143,59 @@ const addAvatar = async (req, res, next) => {
     }    
 }
 
+const verifyUser = async (req, res, next) => {
+    const { verificationToken } = req.params
+    const user = await User.findOne({ verificationToken })
+
+    if (!user) {
+        throw new VerificationError("User not found")
+    }
+
+    const payload = { id: user._id, email: user.email }
+    const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "5d"})
+
+    await User.findByIdAndUpdate(user._id, {
+        token: token,
+        verificationToken: null,
+        verify: true
+    }, { new: true })
+
+    return res.status(200).json({
+        message: 'Verification successful'
+    }) 
+}
+
+const resendVerifyEmail = async (req, res, next) => {
+    const { email } = req.query
+    const { verificationToken } = req.params
+
+    if (!email) {
+        throw new RegistrationConflictError('Missing required field email')
+    }
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        throw new VerificationError('User not found')
+    }
+
+    if (user.verify) {
+        throw new ValidationError('Verification has already been passed')
+    }
+    
+    await sendEmail(email, verificationToken)
+
+    return res.status(200).json({
+        message: 'Verification email sent',
+    })
+}
 
 module.exports = {
     addUser, 
     loginUser,
     logoutUser,
     currentUser,
-    addAvatar
+    addAvatar,
+    verifyUser,
+    resendVerifyEmail
 }

@@ -3,32 +3,23 @@ class ValidationError extends Error {
     constructor(message) {
         super(message)
         this.name = "ValidationError"
+        this.status = 400
     }
-}
-
-function ValidError(status, message) {
-    const err = new ValidationError(message)
-    err.status = status
-    return err
 }
 
 class RegistrationConflictError extends Error {
     constructor(message) {
         super(message)
         this.name = "RegistrationConflictError"
+        this.status = 409
     }
-}
-
-function ConflictError(status, message) {
-    const err = new RegistrationConflictError(message)
-    err.status = status
-    return err
 }
 
 class LoginAuthError extends Error {
     constructor(message) {
         super(message)
         this.name = "LoginAuthError"
+        this.status = 401
     }
 }
 
@@ -38,8 +29,18 @@ function AuthError(status, message) {
     return err
 }
 
+class VerificationError extends Error {
+    constructor(message) {
+        super(message)
+        this.name = "VerificationError"
+        this.status = 404
+    }
+}
+
 module.exports = {
-    ValidError,
-    ConflictError,
-    AuthError
+    ValidationError,
+    RegistrationConflictError,
+    LoginAuthError,
+    AuthError,
+    VerificationError
 };
