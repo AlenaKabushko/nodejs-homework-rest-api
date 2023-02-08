@@ -10,7 +10,7 @@ async function sendEmail(email, verificationToken) {
             to: email,
             subject: "Verification",
             html: `<p>Please follow the link for verification</p>
-            <a href="http://localhost:3000/api/users/verify/${verificationToken}">Verification</a>`, //
+                <a href="http://localhost:3000/api/users/verify/${verificationToken}">Verification</a>`,
             text: `http://localhost:3000/api/users/verify/${verificationToken}`,
         }
 
@@ -25,8 +25,8 @@ async function sendEmail(email, verificationToken) {
 
         await transport.sendMail(sendedEmail)
     } catch (error) {
-        console.error("app error:", error);
+        console.error("app error:", error)
     }
 }
 
-module.exports = { sendEmail };
+module.exports = { sendEmail }

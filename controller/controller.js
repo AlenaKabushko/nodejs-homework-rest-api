@@ -21,8 +21,7 @@ const getContactById = async (req, res, next) => {
         contactId,
         'name phone number email favorite',
         {owner: user._id}
-  )
-  
+    )
     return res.json(contact);
 }
 
