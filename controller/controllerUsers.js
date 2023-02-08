@@ -9,7 +9,9 @@ const { JWT_SECRET } = process.env;
 const path = require('path');
 const fs = require('fs').promises;
 const Jimp = require('jimp');
-const { v4: uuid } = require("uuid");
+const { v4: uuid } = require('uuid');
+const { sendEmail } = require('../utils/sendEmailNodemailer')
+
 
 const addUser = async (req, res, next) => {
     const { email, password } = req.query
@@ -27,9 +29,15 @@ const addUser = async (req, res, next) => {
         avatarURL: createdAvatar,
         verificationToken: verificationToken
     })
-    
+
+    await sendEmail(email, verificationToken)
+
     return res.status(201).json({
-        newUser: { email: user.email, subscription: user.subscription, avatar: user.avatarURL }
+        newUser: {
+            email: user.email,
+            subscription: user.subscription,
+            avatar: user.avatarURL
+        }
     })
 }
 
@@ -40,6 +48,10 @@ const loginUser = async (req, res, next) => {
     const user = await User.findOne({ email })
     if (!user) {
         throw new LoginAuthError('Email is wrong, please try again')
+    }
+
+    if (!user.verify) {
+        throw new VerificationError("User not verified")
     }
 
     const validPassw = await checkPassword(password, user.password)
